@@ -169,7 +169,7 @@ static void* pm_recv(void* data)
       }
     }
     info->last = now;
-    usleep(100000); // one millisecond
+    usleep(10000); // 1/10th of a millisecond
   }
   return NULL;
 }

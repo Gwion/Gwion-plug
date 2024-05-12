@@ -54,13 +54,16 @@ static bool new_node_data(MemPool mp, struct node_data *node,
                         PW_KEY_MEDIA_ROLE, "Music",
                         NULL);
   if(!props) {
-    gw_err("{R}Pipewire{0} can't create %s stream\n", info->name);
+    gw_err("{R}Pipewire{0} can't create %s properties\n", info->name);
     return false;
   }
   if(!(node->stream = pw_stream_new_simple(
     info->loop, info->name, props,
     info->events, info->data))) {
     gw_err("{R}Pipewire{0} can't create %s stream\n", info->name);
+    const char *msg = NULL;
+    pw_stream_get_state(node->stream, &msg);
+    gw_err("{R}Pipewire{0} %s\n", msg);
     return false;
   }
   const struct spa_pod *params[1]; 
@@ -69,7 +72,7 @@ static bool new_node_data(MemPool mp, struct node_data *node,
                         .rate = info->sr,
                         .format = GW_FORMAT,
                         .channels = n)))) {
-    gw_err("{R}Pipewire{0} can't create %s parameters\n", info->name);
+    gw_err("{R}Pipewire{0} can't create %s format\n", info->name);
     return false;
   }
   if(pw_stream_connect(node->stream,
@@ -80,7 +83,10 @@ static bool new_node_data(MemPool mp, struct node_data *node,
                   PW_STREAM_FLAG_MAP_BUFFERS |
                   PW_STREAM_FLAG_RT_PROCESS,
                   params, 1) < 0) {
-    gw_err("{R}Pipewire{0} can't create %s parameters\n", info->name);
+    gw_err("{R}Pipewire{0} can't connect %s stream\n", info->name);
+    const char *msg = NULL;
+    pw_stream_get_state(node->stream, &msg);
+    gw_err("{R}Pipewire{0} %s\n", msg);
     return false;
   }
   return true;

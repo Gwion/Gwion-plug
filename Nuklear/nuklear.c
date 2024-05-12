@@ -730,9 +730,8 @@ GWION_IMPORT(Nuklear) {
 
   GWI_B(gwi_class_ini(gwi, "Group", "Widget"))
   gwi_class_xtor(gwi, group_ctor, group_dtor);
-//  gwi_item_ini(gwi, "@internal", "@widget");
-  gwi_item_ini(gwi, "int", "@widget");
-  o_nk_list = gwi_item_end(gwi, ae_flag_none, num, 0);
+  gwi_item_ini(gwi, "int", "widget");
+  o_nk_list = gwi_item_end(gwi, ae_flag_private, num, 0);
   gwi_func_ini(gwi, "void", "begin");
   GWI_B(gwi_func_end(gwi, group_begin, ae_flag_none))
   gwi_func_ini(gwi, "void", "end");

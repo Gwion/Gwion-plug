@@ -915,11 +915,11 @@ GWION_IMPORT(Gpio) {
   GWI_B(gwi_class_end(gwi));
 
   gwidoc(gwi, "Wait for an event");
-  GWI_B(gwi_oper_ini(gwi, "Gpio.Line", "@now", "void"));
+  GWI_B(gwi_oper_ini(gwi, "Gpio.Line", "Now", "void"));
   GWI_B(gwi_oper_end(gwi, "=>", line2now));
 
   gwidoc(gwi, "Wait for an event");
-  GWI_B(gwi_oper_ini(gwi, "Gpio.Bulk", "@now", "void"));
+  GWI_B(gwi_oper_ini(gwi, "Gpio.Bulk", "Now", "void"));
   GWI_B(gwi_oper_end(gwi, "=>", bulk2now));
 
   // bulk array access?

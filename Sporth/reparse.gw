@@ -1,4 +1,4 @@
-#import Sporth
+import Sporth;
 
 var Sporth s ~> dac;
 

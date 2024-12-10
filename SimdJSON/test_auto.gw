@@ -1,4 +1,4 @@
-#import SimdJSON
+import SimdJSON;
 
 <<< SimdJSON.load("test.json").as_o() :=> var auto json >>>;
 json.get("x") :=> var int x;

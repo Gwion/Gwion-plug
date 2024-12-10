@@ -1,4 +1,4 @@
-#import Evdev
+import Evdev;
 
 new Evdev(4) :=> var auto dev;
 

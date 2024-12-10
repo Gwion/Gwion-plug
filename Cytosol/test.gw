@@ -1,4 +1,4 @@
-#import Cytosol
+import Cytosol;
 #!<<< "here" >>>;
 class Person extends Cytosol.Record {
   var string name;

@@ -1,4 +1,4 @@
-#import Evdev
+import Evdev;
 
 try {
   var int i;

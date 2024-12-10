@@ -1,4 +1,4 @@
-#import Gpio
+import Gpio;
 
 var Gpio("/dev/gpiochip0") gpio;
 [23 $ u32 ] => gpio.lines :=> var auto bulk;

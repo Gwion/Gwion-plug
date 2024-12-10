@@ -1,4 +1,4 @@
-#import SimdJSON
+import SimdJSON;
 
 class C {
   var int? i;

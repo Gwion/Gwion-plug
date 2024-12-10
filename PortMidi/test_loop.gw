@@ -1,4 +1,4 @@
-#import PortMidi
+import PortMidi;
 
 new MidiIn(1) :=> var auto min;
 

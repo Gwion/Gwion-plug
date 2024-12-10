@@ -1,4 +1,4 @@
-#import PortMidi
+import PortMidi;
 
 for (var int i; i < PortMidi.count(); i++) {
   new PortMidi.Info(i) :=> const  auto info;

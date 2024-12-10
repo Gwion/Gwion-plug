@@ -1,8 +1,8 @@
-#import Evdev
-#import Std
+import Evdev;
+import Std;
 
-#import Modules
-#import Soundpipe
+import Modules;
+import Soundpipe;
 
 new Evdev(6) :=> var Evdev dev;
 

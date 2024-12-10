@@ -1,5 +1,5 @@
-#import Modules
-#import Faust
+import Modules;
+import Faust;
 
 "../faust2gw/test/freeverb.dsp" => Faust.compile :=> var Faust faust;
 

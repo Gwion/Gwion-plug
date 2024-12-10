@@ -1,4 +1,4 @@
-#import TinySR
+import TinySR;
 
 "djay_model"
     :=> const string model;

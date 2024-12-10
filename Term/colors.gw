@@ -1,4 +1,4 @@
-#import Term
+import Term;
 
 <<< Term.color(Term.red), "test" >>>;
 <<< Term.color(Term.red, Term.green), "test" >>>;

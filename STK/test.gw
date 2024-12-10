@@ -1,4 +1,4 @@
-#import STK
+import STK;
 #!new stk.BeeThree;
 var stk.BeeThree() b3 ~> dac.chan(0);
 #!<<< b3 >>>;

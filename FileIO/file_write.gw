@@ -1,4 +1,4 @@
-#import FileIO
+import FileIO;
 
 new FileIO("test.txt", "w") :=> const auto file;
 file.write("foo");

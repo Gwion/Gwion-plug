@@ -106,10 +106,10 @@ ANN static Exp* decl_from_id(const Gwion gwion, const m_str type, const m_str na
   return new_exp_decl(gwion->mp, td, &decl, loc);
 }
 
-ANN static inline void stmt_list_from_id(const Gwion gwion, const Stmt_List slist, const m_str type, const m_str name, const loc_t loc, const uint i) {
+ANN static inline void stmt_list_from_id(const Gwion gwion, StmtList *slist, const m_str type, const m_str name, const loc_t loc, const uint i) {
   Exp* exp = decl_from_id(gwion, type, name, loc);
   Stmt stmt = MK_STMT_EXP(loc, exp);
-  mp_vector_set(slist, Stmt, i, stmt);
+  stmtlist_set(slist, i, stmt);
 }
 
 static OP_CHECK(ctor_as_call) {
@@ -119,7 +119,8 @@ static OP_CHECK(ctor_as_call) {
   e->exp_type = ae_exp_dot;
   Exp_Dot *dot = &e->d.exp_dot;
   dot->base = func;
-  dot->xid = insert_symbol(env->gwion->st, "call");
+  dot->tag.sym = insert_symbol(env->gwion->st, "call");
+  dot->tag.loc = e->loc;
   e->is_call = true;
   call->func->type = NULL;
   return check_exp_call1(env, call) ?: env->gwion->type[et_error];
@@ -140,7 +141,7 @@ static inline bool traverse_ffi(const Env env, const Type ffi, const Class_Def c
 static inline Type _check_ffi_types(const Env env, const Exp_Call *call) {
   if(call->args->next)
     CHECK_O(check_exp(env, call->args->next));;
-  return known_type(env, *mp_vector_at(call->tmpl->call, Type_Decl*, 0));
+  return known_type(env, tmplarglist_at(call->tmpl->call, 0).d.td);
 }
 
 static inline Type check_ffi_types(const Env env, const Type ffi, const Exp_Call *call) {
@@ -197,10 +198,10 @@ static OP_CHECK(opck_ffi_ctor) {
     ERR_N(exp->loc, "can't open func '%s'", func_name);
 
   exp = exp->next;
-  Arg_List args = NULL;
+  ArgList *args = NULL;
   const Type cffi = nspc_lookup_type0(ffi->nspc, insert_symbol(env->gwion->st, "CFFI"));
   if(exp) {
-    args = new_mp_vector(env->gwion->mp, Arg, 0);
+    args = new_arglist(env->gwion->mp, 0);
     do {
       const Type actual = actual_type(env->gwion, exp->type);
       if(!is_class(env->gwion, exp->type) || !isa(actual, cffi))
@@ -211,7 +212,7 @@ static OP_CHECK(opck_ffi_ctor) {
       Type_Decl *td = str2td(env->gwion, name, loc);
       struct Var_Decl_ vd = { .tag = {.loc = loc }};
       Arg arg = { .var = MK_VAR(td, vd) };
-      mp_vector_add(env->gwion->mp, &args, Arg, arg);
+      arglist_add(env->gwion->mp, &args, arg);
     } while((exp = exp->next));
   }
   char _ret_name[64];
@@ -222,21 +223,21 @@ static OP_CHECK(opck_ffi_ctor) {
 //    set_fbflag(fb, fbflag_variadic);
   Func_Def fdef = new_func_def(mp, fb, NULL);
   Section section = MK_SECTION(func, func_def, fdef, fdef->base->tag.loc);
-  Ast body = new_mp_vector(env->gwion->mp, Section, 2);
-  mp_vector_set(body, Section, 0, section);
+  Ast body = new_sectionlist(env->gwion->mp, 2);
+  sectionlist_set(body, 0, section);
 {
-  Stmt_List slist = new_mp_vector(env->gwion->mp, Stmt, 3);
+  StmtList *slist = new_stmtlist(env->gwion->mp, 3);
   stmt_list_from_id(env->gwion, slist, "cif", "ffi_cif", exp_self(call)->loc, 0);
   stmt_list_from_id(env->gwion, slist, "int", "func", exp_self(call)->loc, 1);
   stmt_list_from_id(env->gwion, slist, "int", "sz", exp_self(call)->loc, 2);
   Section section = MK_SECTION(stmt, stmt_list, slist, fdef->base->tag.loc);
-  mp_vector_set(body, Section, 1, section);
+  sectionlist_set(body, 1, section);
 }
   char ext_name[64];
   sprintf(ext_name, "FFI:[FFIBASE.%s]", ret_type->name);
   Type_Decl *const ext = str2td(env->gwion, ext_name, call->func->loc);
   const Class_Def cdef = new_class_def(mp, ae_flag_abstract | ae_flag_final, MK_TAG(func_sym, call->func->loc), ext, body);
-  CHECK_N(traverse_ffi(env, ffi, cdef));
+  CHECK_BN(traverse_ffi(env, ffi, cdef));
   const Type t = cdef->base.type;
   const Func func = (Func)vector_front(&t->nspc->vtable);
   //builtin_func(env->gwion, func, !variadic ? ffi_do_call : ffivar_do_call);

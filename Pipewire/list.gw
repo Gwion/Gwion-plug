@@ -1,5 +1,5 @@
-#import Pipewire
-#import Modules
+import Pipewire;
+import Modules;
 
 new SinOsc ~> dac;
 #!10::second => now;

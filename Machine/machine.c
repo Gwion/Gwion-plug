@@ -26,16 +26,16 @@ static SFUN(machine_add) {
   else xfun_handle(shred, "InvalidRuntimeCompilation");
 }
 
-static MP_Vector *get_values(const VM_Shred shred, const M_Vector names) {
+static ValueList *get_values(const VM_Shred shred, const M_Vector names) {
   const m_uint code_offset = ((Instr)vector_at(&shred->code->instr, shred->pc-3))->m_val;
   const VM_Code code = *(VM_Code*)REG(-code_offset - SZ_INT);
   const uint32_t clen = code->types->len;
   const uint32_t nlen = ARRAY_LEN(names);
   const uint32_t len = clen <= nlen ? clen : nlen;
-  MP_Vector *const values = new_mp_vector(shred->info->mp, Value, code->types->len);
+  ValueList *const values = new_valuelist(shred->info->mp, code->types->len);
   m_uint offset = SZ_INT*2;
   for(uint32_t i = 0; i < len; i++) {
-    const Type t = *mp_vector_at(code->types, Type, i);
+    const Type t = typelist_at(code->types, i);
     const M_Object o = *(M_Object*)(names->ptr + ARRAY_OFFSET + i * SZ_INT);
     m_bit *data = MEM(offset);
     anytype_addref(t, data);
@@ -46,7 +46,7 @@ static MP_Vector *get_values(const VM_Shred shred, const M_Vector names) {
       v->d.ptr = mp_calloc2(shred->info->mp, t->size);
       memcpy(v->d.ptr, data, t->size);
     }
-    mp_vector_set(values, Value, i, v);
+    valuelist_set(values, i, v);
     offset += t->size;
   }
   return values;
@@ -56,9 +56,9 @@ static SFUN(machine_add_values) {
   const M_Object obj = *(M_Object*)MEM(0);
   const m_str filename = STRING(obj);
   const M_Vector names = ARRAY(*(M_Object*)MEM(SZ_INT));
-  MP_Vector *const values = get_values(shred, names);
+  ValueList *const values = get_values(shred, names);
   const m_uint ret = compile_filename_values(shred->info->vm->gwion, filename, values);
-  free_mp_vector(shred->info->mp, Value, values);
+  free_valuelist(shred->info->mp, values);
   if(ret > 0) *(m_int*)RETURN = ret;
   else xfun_handle(shred, "InvalidRuntimeCompilation");
 }
@@ -87,9 +87,9 @@ static SFUN(machine_replace_values) {
     xfun_handle(shred, "InvalidShredRemove");
   const M_Object str = *(M_Object*)MEM(SZ_INT);
   const M_Vector names = ARRAY(*(M_Object*)MEM(SZ_INT*2));
-  MP_Vector *const values = get_values(shred, names);
+  ValueList *const values = get_values(shred, names);
   const bool ret = compile_filename_xid_values(vm->gwion, STRING(str), xid, values);
-  free_mp_vector(shred->info->mp, Value, values);
+  free_valuelist(shred->info->mp, values);
   if(ret) *(m_int*)RETURN = ret;
   else xfun_handle(shred, "InvalidRuntimeCompilation");
 }
@@ -121,9 +121,9 @@ static SFUN(machine_check_values) {
   pass_set(shred->info->vm->gwion, &v);
   vector_release(&v);
   const M_Vector names = ARRAY(*(M_Object*)MEM(SZ_INT));
-  MP_Vector *const values = get_values(shred, names);
+  ValueList *const values = get_values(shred, names);
   const m_uint ret = compile_string_values(shred->info->vm->gwion, "Machine.check", line, values);
-  free_mp_vector(shred->info->mp, Value, values);
+  free_valuelist(shred->info->mp, values);
   pass_set(shred->info->vm->gwion, back);
   free_vector(shred->info->mp, back);
   if(ret > 0) *(m_int*)RETURN = ret;
@@ -142,9 +142,9 @@ static SFUN(machine_compile_values) {
   const M_Object code_obj = *(M_Object*)MEM(0);
   const m_str line = STRING(code_obj);
   const M_Vector names = ARRAY(*(M_Object*)MEM(SZ_INT));
-  MP_Vector *const values = get_values(shred, names);
+  ValueList *const values = get_values(shred, names);
   const m_uint ret = compile_string_values(shred->info->vm->gwion, "Machine.compile", line, values);
-  free_mp_vector(shred->info->mp, Value, values);
+  free_valuelist(shred->info->mp, values);
   if(ret > 0) *(m_int*)RETURN = ret;
   else xfun_handle(shred, "InvalidRuntimeCompilation");
 }
@@ -167,9 +167,9 @@ static SFUN(machine_compile_replace_values) {
   const M_Object code_obj = *(M_Object*)MEM(SZ_INT);
   const m_str line = STRING(code_obj);
   const M_Vector names = ARRAY(*(M_Object*)MEM(SZ_INT*2));
-  MP_Vector *const values = get_values(shred, names);
+  ValueList *const values = get_values(shred, names);
   const m_uint ret = compile_string_xid_values(shred->info->vm->gwion, "Machine.compile", line, xid, values);
-  free_mp_vector(shred->info->mp, Value, values);
+  free_valuelist(shred->info->mp, values);
   if(ret > 0) *(m_int*)RETURN = ret;
   else xfun_handle(shred, "InvalidRuntimeCompilation");
 }

@@ -1,4 +1,4 @@
-#import WS2812b
+import WS2812b;
 
 fun int color(int r, int g, int b) {
   return (r << 16) + (g << 8) + b;

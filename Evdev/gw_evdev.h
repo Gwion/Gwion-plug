@@ -1,10 +1,14 @@
 #ifndef __GWEVDEV
 #define __GWEVDEV
+
+typedef struct input_event InputEvent;
+MK_VECTOR_TYPE(InputEvent, inputevent)
+
 typedef struct {
   struct libevdev* evdev;
   pthread_t thread;
   pthread_mutex_t mutex;
-  MP_Vector *args;
+  InputEventList *args;
   MemPool mp;
   uint32_t idx;
   int index;

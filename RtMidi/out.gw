@@ -1,4 +1,4 @@
-#import RtMidi
+import RtMidi;
 
 #! open a MIDI output device
 fun RtMidi.Out open(const string name) {

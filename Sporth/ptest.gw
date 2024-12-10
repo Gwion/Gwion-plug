@@ -1,5 +1,5 @@
-#import Sporth
-#import Math
+import Sporth;
+import Math;
 
 110 :=> const float bpm;
 (60.0 / bpm) :: second :=> const dur t;

@@ -1,4 +1,4 @@
-#import Vecx
+import Vecx;
 
 var complex a;
 var complex b;

@@ -1,4 +1,4 @@
-#import MsgPack
+import MsgPack;
 
 class Bar {
   54 :=> var int i;

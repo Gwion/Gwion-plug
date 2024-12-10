@@ -1,6 +1,6 @@
 #! [contains] 6 4
 
-#import TinyRegex
+import TinyRegex;
 
 new TinyRegex("test") :=> var auto re;
 

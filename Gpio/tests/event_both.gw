@@ -1,4 +1,4 @@
-#import Gpio
+import Gpio;
 
 var Gpio("/dev/gpiochip0") gpio;
 23 => gpio.line :=> var auto line;

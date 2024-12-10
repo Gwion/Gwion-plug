@@ -1,4 +1,4 @@
-#import CoreUtil
+import CoreUtil;
 
 CoreUtil.touch("rmme.gw");
 

@@ -226,10 +226,10 @@ static OP_CHECK(opck_func2cyt) {
   const Exp_Binary *bin = (Exp_Binary*)data;
   const Func func = bin->rhs->type->info->func;
   const Type fields = (Type)vector_front(&bin->lhs->type->info->tuple->contains);
-  Arg_List args = func->def->base->args;
+  ArgList *args = func->def->base->args;
   if(args) {
     for(uint32_t i = 0; i < args->len; i++) {
-      Arg *arg = mp_vector_at(args, Arg, i);
+      Arg *arg = arglist_ptr_at(args, i);
       if(!isa(arg->type, env->gwion->type[et_int]) &&
          !isa(arg->type, env->gwion->type[et_string]) &&
          arg->type == fields && !isa(arg->type, fields))
@@ -246,30 +246,30 @@ static OP_EMIT(opem_func2cyt) {
   const Instr instr = emit_add_instr(emit, func2cyt);
   struct Vector_ v;
   vector_init(&v);
-  Arg_List args = func->def->base->args;
+  ArgList *args = func->def->base->args;
   if(args) {
     for(uint32_t i = 0; i < args->len; i++) {
-      Arg *arg = mp_vector_at(args, Arg, i);
-      vector_add(&v, (m_uint)arg->type);
+      const Arg arg = arglist_at(args, i);
+      vector_add(&v, (m_uint)arg.type);
     }
   }
   instr->m_val = (m_uint)v.ptr;
   return true;
 }
 
-static m_int cytosol_stmt_list(const Env env, const Type fields, Stmt_List list) {
+static m_int cytosol_stmt_list(const Env env, const Type fields, StmtList *list) {
   for(uint32_t i = 0; i < list->len; i++) {
-    Stmt* stmt = mp_vector_at(list, Stmt, i);
-    if (stmt->stmt_type == ae_stmt_exp &&
-        stmt->d.stmt_exp.val->exp_type == ae_exp_decl &&
-        stmt->d.stmt_exp.val->d.exp_decl.list->len == 1) {
-      const Type type = mp_vector_at(stmt->d.stmt_exp.val->d.exp_decl.list, struct Var_Decl_, 0)->value->type;
+    const Stmt stmt = stmtlist_at(list, i);
+    if (stmt.stmt_type == ae_stmt_exp &&
+        stmt.d.stmt_exp.val->exp_type == ae_exp_decl &&
+        stmt.d.stmt_exp.val->d.exp_decl.list->len == 1) {
+      const Type type = stmt->d.stmt_exp.val->d.exp_decl.var.vd.value->type;
       if(!isa(type, env->gwion->type[et_int]) &&
         !isa(type, env->gwion->type[et_string]) &&
         !isa(type, fields))
-      ERR_B(stmt->d.stmt_exp.val->loc, "invalid type '%s' in Cytosol.field", type->name)
+      ERR_B(stmt.d.stmt_exp.val->loc, "invalid type '%s' in Cytosol.field", type->name)
    } else
-      ERR_B(stmt->loc, "invalid stmt in Cytosol.field")
+      ERR_B(stmt.loc, "invalid stmt in Cytosol.field")
   }
   return list->len;
 }

@@ -1,4 +1,4 @@
-#import Gpio
+import Gpio;
 #!var float f;
 new Gpio("/dev/gpiochip0") :=> var auto gpio;
 <<< gpio.name() >>>;

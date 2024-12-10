@@ -250,7 +250,7 @@ ANN static Symbol tuple_sym(const Env env, const Vector v) {
       text_add(&text, str);
       free_mstr(env->gwion->mp, str);
     } else
-    text_add(&text, "_");
+      text_add(&text, "_");
     if(i+1 < vector_size(v))
       text_add(&text, ",");
   }
@@ -274,7 +274,7 @@ ANN Type tuple_type(const Env env, const Vector v, const loc_t loc) {
   const Type exists = nspc_lookup_type1(env->curr, sym);
   if(exists)
     return exists;
-  Stmt_List base = NULL;
+  StmtList *base = NULL;
   for(m_uint i = 0; i < vector_size(v); ++i) {
     char name[num_digit(i) + 16];
     sprintf(name, "@tuple member %"UINT_F, i);
@@ -283,15 +283,15 @@ ANN Type tuple_type(const Env env, const Vector v, const loc_t loc) {
     Exp* decl = decl_from_id(env->gwion, t, sym, loc);
     Stmt stmt = MK_STMT_EXP(loc, decl);
     if(base) {
-      mp_vector_add(env->gwion->mp, &base, Stmt, stmt);
+      stmtlist_add(env->gwion->mp, &base, stmt);
     } else {
-      base = new_mp_vector(env->gwion->mp, Stmt, 1);
-      mp_vector_set(base, Stmt, 0, stmt);
+      base = new_stmtlist(env->gwion->mp, 1);
+      stmtlist_set(base, 0, stmt);
     }
   }
   Section section = MK_SECTION(stmt, stmt_list, base, loc);
-  Ast body = new_mp_vector(env->gwion->mp, Section, 1);
-  mp_vector_set(body, Section, 0, section);
+  Ast body = new_sectionlist(env->gwion->mp, 1);
+  sectionlist_set(body, 0, section);
   Type_Decl *td = new_type_decl(env->gwion->mp, insert_symbol(env->gwion->st, TUPLE_NAME), loc);
   Class_Def cdef = new_class_def(env->gwion->mp, ae_flag_none, MK_TAG(sym, loc), td, body);
   SET_FLAG(cdef, abstract | ae_flag_final);
@@ -454,9 +454,11 @@ static OP_EMIT(opem_at_unpack) {
 static ANN Type scan_tuple(const Env env, const Type_Decl *td) {
   struct Vector_ v;
   vector_init(&v);
-  TmplArg_List tl = td->types;
+  TmplArgList *tl = td->types;
   for(uint32_t i = 0; i < tl->len; i++) {
-    Type_Decl *td = *mp_vector_at(tl, Type_Decl*, i);
+    TmplArg arg = tmplarglist_at(tl, i);
+    // TODO: beware arg type!!!
+    Type_Decl *td = arg.d.td;
     const Type t = td->tag.sym != insert_symbol(env->gwion->st, "_") ?
        known_type(env, td) : (Type)1;
     if(t)

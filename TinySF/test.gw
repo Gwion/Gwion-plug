@@ -1,4 +1,4 @@
-#import TinySF
+import TinySF;
 
 TinySF("Drums.sf2") :=> const TinySF tsf ~> dac;
 repeat(100) {

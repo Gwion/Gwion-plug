@@ -1,6 +1,6 @@
-#import Math
-#import LeBiniou
-#import Modules
+import Math;
+import LeBiniou;
+import Modules;
 
 var SinOsc s ~> LeBiniou ~> dac;
 

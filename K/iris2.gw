@@ -1,4 +1,4 @@
-#import K
+import K;
 var int i;
 var int label[150];
 for(0 :=> i; i < 50; i++) {

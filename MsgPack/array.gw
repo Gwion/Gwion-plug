@@ -1,4 +1,4 @@
-#import MsgPack
+import MsgPack;
 
 <<< MsgPack.unpack:[int[]]([1, 2] => MsgPack.pack).size() >>>;
 <<< MsgPack.unpack:[int[]]([1, 2] => MsgPack.pack)[0] >>>;

@@ -1,4 +1,4 @@
-#import BMI
+import BMI;
 
 new BMI(256, 256, 0) :=> const auto bmi;
 

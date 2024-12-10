@@ -1,4 +1,4 @@
-#import MsgPack
+import MsgPack;
 "foo" => MsgPack.pack :=> var auto msg;
 <<< MsgPack.unpack:[string](msg) >>>;
 

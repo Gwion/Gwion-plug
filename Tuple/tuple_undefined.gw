@@ -1,4 +1,4 @@
 #! [contains] tuple subscripts is undefined
-#import Tuple
+import Tuple;
 var Tuple:[string, _] t;
 t[1];

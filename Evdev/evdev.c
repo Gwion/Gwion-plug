@@ -28,7 +28,7 @@ static DTOR(evdev_dtor) {
     pthread_mutex_destroy(&info->mutex);
     close(info->fd);
   }
-  free_mp_vector(shred->info->mp, struct input_event, info->args);
+  free_inputeventlist(shred->info->mp, info->args);
 }
 
 ANN static void* evdev_process(void* arg) {
@@ -47,7 +47,7 @@ ANN static void* evdev_process(void* arg) {
     }
     if(rc == LIBEVDEV_READ_STATUS_SUCCESS  && event.type) {
       pthread_mutex_lock(&info->mutex);
-      mp_vector_add(info->mp, &info->args, struct input_event, event);
+      inputeventlist_add(info->mp, &info->args, event);
       broadcast(o);
       pthread_mutex_unlock(&info->mutex);
     }
@@ -58,7 +58,7 @@ ANN static void* evdev_process(void* arg) {
 static MFUN(evdev_index) {
   EvdevInfo* info = INFO(o);
   info->evdev = libevdev_new();
-  info->args  = new_mp_vector(shred->info->mp, struct input_event, 0);
+  info->args  = new_inputeventlist(shred->info->mp, 0);
   info->mp = shred->info->mp;
   const m_int index = *(m_int*)MEM(SZ_INT);
   char c[strlen(EVDEV_PREFIX) + num_digit(index) + 1];
@@ -89,20 +89,20 @@ static MFUN(evdev_recv) {
   EvdevInfo* info = INFO(o);
   M_Object ev = *(M_Object*)MEM(SZ_INT);
   pthread_mutex_lock(&info->mutex);
-  MP_Vector *const v = info->args;
+  InputEventList *const v = info->args;
   if(info->idx == v->len) {
     info->idx = v->len = 0;
     *(m_uint*)RETURN = 0;
     pthread_mutex_unlock(&info->mutex);
     return;
   }
-  struct input_event* arg = mp_vector_at(v, struct input_event, info->idx++);
+  struct input_event arg = inputeventlist_at(v, info->idx++);
   gw_input_event *e = EVDEVEV(ev);
-  e->type  = arg->type;
-  e->code  = arg->code;
-  e->value = arg->value;
-  e->sec   = arg->time.tv_sec;
-  e->usec  = arg->time.tv_usec;
+  e->type  = arg.type;
+  e->code  = arg.code;
+  e->value = arg.value;
+  e->sec   = arg.time.tv_sec;
+  e->usec  = arg.time.tv_usec;
   *(m_uint*)RETURN = 1;
   pthread_mutex_unlock(&info->mutex);
 }
@@ -391,8 +391,8 @@ GWION_IMPORT(Evdev) {
   gwi_class_xtor(gwi, NULL, evdev_dtor);
   t_evdev->nspc->offset += sizeof(EvdevInfo);
 
-  GWI_B(import_absinfo(gwi));
-  GWI_B(import_evdevev(gwi));
+  GWI_B(gwimport_absinfo(gwi));
+  GWI_B(gwimport_evdevev(gwi));
 
   GWI_B(gwi_func_ini(gwi, "auto", "new"))
   GWI_B(gwi_func_arg(gwi, "int", "i"))
@@ -500,7 +500,7 @@ GWION_IMPORT(Evdev) {
   import_get_set_fetch(event)
   import_get_set_fetch(slot)
 
-  GWI_B(import_uinput(gwi));
+  GWI_B(gwimport_uinput(gwi));
   GWI_B(gwi_func_ini(gwi, "Uinput", "uinput"))
   GWI_B(gwi_func_end(gwi, uinput_create, ae_flag_none))
   GWI_B(gwi_class_end(gwi))

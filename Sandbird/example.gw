@@ -1,4 +1,4 @@
-#import Sandbird
+import Sandbird;
 
 var Sandbird server;
 

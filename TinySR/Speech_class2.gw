@@ -1,4 +1,4 @@
-#import TinySR
+import TinySR;
 
 class Speech extends TinySR {
   var private int _try;

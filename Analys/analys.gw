@@ -1,4 +1,4 @@
-#import Analys
+import Analys;
 var Noise n ~> var Tone t ~> var FFT fft ~> dac;
 
 20 => t.hp;

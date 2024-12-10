@@ -1,3 +1,3 @@
-#import MsgPack
+import MsgPack;
 { "soo" : "uu"} => MsgPack.pack :=> var auto msg;
 <<< MsgPack.unpack:[Dict:[string, string]](msg)["soo"] >>>;

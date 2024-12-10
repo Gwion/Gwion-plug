@@ -1,4 +1,4 @@
-#import FileIO
+import FileIO;
 
 try {
   while(stdin.read() :=> const string _str)

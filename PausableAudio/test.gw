@@ -1,5 +1,5 @@
-#import PausableAudio
-#import Modules
+import PausableAudio;
+import Modules;
 
 <<< "before" >>>;
 PausableAudio.play(true);

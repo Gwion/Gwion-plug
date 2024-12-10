@@ -139,7 +139,7 @@ OP_CHECK(opck_vecx_ctor);
   Exp* base = dot->base;                                                    \
   exp_setvar(base, 1);                                                            \
   if(!emit_exp(emit, base)) return (Instr)true;                              \
-  const bool is_first = !strcmp(#first_name, s_name(dot->xid));                \
+  const bool is_first = !strcmp(#first_name, s_name(dot->tag.sym));                \
   if(is_first && exp_self(dot)->emit_var)                                        \
     return (Instr)true;                                                         \
   const Instr instr = emit_add_instr(emit, is_first ? ComplexReal : ComplexImag);\

@@ -1,4 +1,4 @@
-#import FFI
+import FFI;
 
 var FFI:[int]("puts", FFI.pointer) puts;
 <<< puts.call("test") >>>;

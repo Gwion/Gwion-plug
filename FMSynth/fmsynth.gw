@@ -1,4 +1,4 @@
-#import FMSynth
+import FMSynth;
 var FMSynth fm ~> dac;
 "/home/djay/src/libfmsynth-master/presets/clocky.fmp" => fm.load;
 fm.noteon(80, 110);

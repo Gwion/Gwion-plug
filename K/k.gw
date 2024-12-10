@@ -1,4 +1,4 @@
-#import K
+import K;
 var float data[8][4];
 var int labl[8];
 var float instance[3][4];

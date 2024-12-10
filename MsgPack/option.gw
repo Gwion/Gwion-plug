@@ -1,4 +1,4 @@
-#import MsgPack
+import MsgPack;
 #!var int?(none) i;
 var int?(val, 5) i;
 i => MsgPack.pack :=> var string msg0;

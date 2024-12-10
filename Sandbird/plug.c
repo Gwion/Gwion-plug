@@ -12,17 +12,17 @@
 #include "array.h"
 #include "sandbird.h"
 
+MK_VECTOR_TYPE(sb_Event, sbevent)
+
 #define SRV(o) (*(sb_Server**)(o->data + SZ_INT))
-#define EV(o) (*(MP_Vector**)(o->data + SZ_INT*2))
+#define EV(o) (*(sb_EventList**)(o->data + SZ_INT*2))
 #define ST(o) (*(sb_Stream**)(o->data))
 
 static int handler(sb_Event*ev) {
   const M_Object o = (M_Object)ev->udata;
   if(!vector_size(&EV_SHREDS(o))) return;
   const VM_Shred shred = (VM_Shred)vector_front(&EV_SHREDS(o));
-//  mp_vector_add(shred->info->mp, &EV(o), sb_Event, *ev);
-  mp_vector_set(EV(o), sb_Event, 0, *ev);
-printf("stream %p %p\n", ev->stream, EV(o));
+  sbeventlist_set(EV(o), 0, *ev);
   broadcast(o);
   return 0;
 }
@@ -41,13 +41,13 @@ static CTOR(sandbird_ctor) {
     .handler = handler,
   };
   SRV(o) = sb_new_server(&opt);
-  EV(o) = new_mp_vector(shred->info->mp, sb_Event, 1);
+  EV(o) = new_sbeventlist(shred->info->mp, 1);
   threadpool_add(shred, process, o); // long running
 }
 
 static DTOR(sandbird_dtor) {
   sb_close_server(SRV(o));
-  free_mp_vector(shred->info->mp, sb_Event, EV(o));
+  free_sbeventlist(shred->info->mp, EV(o));
 }
 
 static SFUN(error_str) {
@@ -86,12 +86,10 @@ static MFUN(recv) {
      *(m_int*)RETURN = 0;
      return;
   }
-//  sb_Event *ev = mp_vector_at(EV(o), sb_Event, i++);
-  sb_Event *ev = mp_vector_at(EV(o), sb_Event, 0);
-printf("!stream %p %p %i!%i\n", ev, EV(o), ev->type, SB_EV_REQUEST);
+  const sb_Event ev = sbeventlist_at(EV(o), 0);
 //printf("!stream %p\n", ev->stream);
-  *(sb_Stream**)(stream->data) = ev->stream;
-  *(m_int*)(stream->data + SZ_INT) = ev->type;
+  *(sb_Stream**)(stream->data) = ev.stream;
+  *(m_int*)(stream->data + SZ_INT) = ev.type;
   const Gwion gwion = shred->info->vm->gwion;
 //  if(ev->address)
 //  *(M_Object*)(stream->data + SZ_INT*2) = new_string(gwion, (m_str)ev->address);

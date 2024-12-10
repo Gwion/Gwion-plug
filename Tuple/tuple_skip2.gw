@@ -1,4 +1,4 @@
-#import Tuple
+import Tuple;
 Tuple("Tom", 2, "Taxi driver") :=> var Tuple:[string,_, string] t;
 <<< t>>>;
 <<< t[0]>>>;

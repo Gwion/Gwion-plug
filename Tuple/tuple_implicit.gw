@@ -1,5 +1,5 @@
 #! [contains] Tom
-#import Tuple
+import Tuple;
 fun void test(Tuple:[string] t) {
   <<< t[0] >>>;
 }

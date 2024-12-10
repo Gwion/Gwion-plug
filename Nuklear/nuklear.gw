@@ -1,5 +1,5 @@
-#import Nuklear
-#import Modules
+import Nuklear;
+import Modules;
 
 var Nk.Panel panel;
 

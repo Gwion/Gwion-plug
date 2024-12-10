@@ -1,4 +1,4 @@
-#import MsgPack
+import MsgPack;
 primitive Foo 4;
 4564 :=> var Foo foo;
 foo => MsgPack.pack :=> var auto msg;

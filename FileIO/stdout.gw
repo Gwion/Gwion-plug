@@ -1,4 +1,4 @@
-#import FileIO
+import FileIO;
 
 stderr.write("lkjl");
 

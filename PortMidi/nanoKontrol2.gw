@@ -1,4 +1,4 @@
-#import PortMidi
+import PortMidi;
 
 var MidiIn min;
 min.open(3);

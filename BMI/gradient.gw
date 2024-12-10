@@ -1,4 +1,4 @@
-#import BMI
+import BMI;
 
 #define SIZE 256
 

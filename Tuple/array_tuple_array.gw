@@ -1,4 +1,4 @@
-#import Tuple
+import Tuple;
 Tuple([1,2], "Tom") :=> var Tuple:[int[], string] tup;
 
 var Tuple:[int[], string] stack[3];

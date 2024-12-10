@@ -1,4 +1,4 @@
-#import Pd
+import Pd;
 var PD pd;
 ("test.pd", ".") => pd.open;
 5::second => now;

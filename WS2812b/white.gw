@@ -1,7 +1,7 @@
 
 
 
-#import WS2812b
+import WS2812b;
 
 const WS2812b("/dev/spidev0.0", WS2812b.Mode.THREE, 10 000 000, 144) leds;
 
